@@ -1,6 +1,10 @@
 import pytest
 import requests
+from faker import Faker
+
 from task_3.constants import BASE_URL, HEADERS
+
+fake = Faker()
 
 
 @pytest.fixture(scope="session")
@@ -26,20 +30,33 @@ def auth_session():
 
     return session
 
-
 @pytest.fixture()
-def create_item_id(auth_session, item_data):
-    create_item = auth_session.post(f"{BASE_URL}/items", json=item_data)
-    assert create_item.status_code == 200
-    item_id = create_item.json().get("itemid")
-    assert item_id is not None, "ID не найден в ответе"
-
-    return item_id
-
-
-@pytest.fixture()
-def item_data():
-    return {
-        "title": "string",
-        "description": "string"
+def get_auth_token():
+    auth_data = {
+        "username": "nenjuhajujanic@mail.ru",
+        "password": "Qwerty11_33"
     }
+    response = requests.post(f"{BASE_URL}/api/v1/login/access-token", data=auth_data)
+    assert response.status_code == 200
+
+    return response.json().get("access_token")
+
+@pytest.fixture()
+def headers_data(get_auth_token):
+    token = get_auth_token
+    return  {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": f"Bearer {token}"
+        }
+
+@pytest.fixture()
+def get_items(headers_data):
+    headers = headers_data
+
+    response = requests.get(f"{BASE_URL}/api/v1/items/", headers=headers)
+    assert response.status_code == 200, "Список items не получен"
+
+    items = response.json()
+    return items
+
