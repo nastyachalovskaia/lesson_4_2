@@ -14,8 +14,8 @@ def auth_session():
     session.headers.update(HEADERS)
 
     auth_data = {
-        "username": "nenjuhajujanic@mail.ru",
-        "password": "Qwerty11_33"
+        "username": "email",
+        "password": "secret"
     }
 
     auth_response = session.post(f"{BASE_URL}/api/v1/login/access-token", data=auth_data)
@@ -33,8 +33,8 @@ def auth_session():
 @pytest.fixture()
 def get_auth_token():
     auth_data = {
-        "username": "nenjuhajujanic@mail.ru",
-        "password": "Qwerty11_33"
+        "username": "email",
+        "password": "secret"
     }
     response = requests.post(f"{BASE_URL}/api/v1/login/access-token", data=auth_data)
     assert response.status_code == 200
